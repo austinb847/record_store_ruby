@@ -2,28 +2,63 @@ require 'pry'
 
 class Album
 
-  attr_reader :id, :name 
-  attr_accessor :name, :sold_albums, :year, :genre, :artist
-  @@albums = {}
-  @@total_rows = 0
+  attr_reader :id 
+  attr_accessor :name, :year #:sold_albums, :year, :genre, :artist
+  
   
 
-  def initialize(name, id, year, genre, artist)
-    @name = name  
-    @id = id || @@total_rows += 1 
-    @year = year.to_i
-    @genre = genre
-    @artist = artist
-    @sold_albums = false 
+  def initialize(attributes)
+    @name = attributes.fetch(:name)  
+    @id = attributes.fetch(:id)
+    @year = attributes.fetch(:year).to_i
+    # @genre = attributes.fetch(:genre)
+    # @artist = attributes.fetch(:artist)
+    # @sold_albums = false 
    
   end
 
   def self.all
-    @@albums.values()
+    returned_albums = DB.exec("SELECT * FROM albums;")
+    albums = []
+    returned_albums.each() do |album|
+      name = album.fetch("name")
+      id = album.fetch("id").to_i
+      year = album.fetch("year").to_i
+      albums.push(Album.new({:name => name, :id => id, :year => year}))
+    end
+    albums
   end
+
+  def self.sort_by_name()
+    sorted_albums = DB.exec("SELECT * FROM albums ORDER BY name;")
+    albums = []
+    sorted_albums.each() do |album|
+      name = album.fetch("name")
+      id = album.fetch("id").to_i
+      year = album.fetch("year").to_i
+      albums.push(Album.new({:name => name, :id => id, :year => year}))
+    end
+    albums
+  end
+
+  def self.sort_by_year()
+    sorted_albums = DB.exec("SELECT * FROM albums ORDER BY year DESC;")
+    albums = []
+    sorted_albums.each() do |album|
+      name = album.fetch("name")
+      id = album.fetch("id").to_i
+      year = album.fetch("year").to_i
+      albums.push(Album.new({:name => name, :id => id, :year => year}))
+    end
+    albums
+  end
+
+
     
   def save
-    @@albums[self.id] = Album.new(self.name, self.id, self.year, self.genre, self.artist)
+    #@@albums[self.id] = self
+    result = DB.exec("INSERT INTO albums (name, year) VALUES ('#{@name}', '#{@year}') RETURNING id;") # [{:name => "some_name", :id => 2}]
+    @id = result.first().fetch("id").to_i  
   end
 
   def ==(album_to_compare)
@@ -31,32 +66,33 @@ class Album
   end
 
   def self.clear
-    @@albums = {}
-    @@total_rows = 0
+    DB.exec("DELETE FROM albums *;")
   end
 
   def self.find(id)
-    @@albums[id]
+    album = DB.exec("SELECT * FROM albums WHERE id =#{id};").first
+    name = album.fetch("name")
+    id = album.fetch("id").to_i
+    year = album.fetch("year").to_i
+    Album.new({:name => name, :id => id, :year => year})
   end
 
   # def self.search(search)
   #   @@albums.values().select {|a| a.name.match(/#{search}/i)}
   # end 
 
-  def update(name, year, genre, artist)
-    self.name = name
-    self.year = year.to_i
-    self.genre = genre
-    self.artist = artist
-    @@albums[self.id] = Album.new(self.name, self.id, self.year, self.genre, self.artist )
+  def update(name)
+    @name = name
+    DB.exec("UPDATE albums SET name = '#{@name}' WHERE id = #{@id};")
   end
 
-  def self.sort()
-     @@albums.values().sort_by(&:name)
-  end
+  # def self.sort()
+  #    @@albums.values().sort_by(&:name)
+  # end
 
   def delete()
-    @@albums.delete(self.id)
+    DB.exec("DELETE FROM albums WHERE id = #{@id};")
+    DB.exec("DELETE FROM songs WHERE album_id = #{@id};")
   end
    
   def sold
@@ -64,7 +100,7 @@ class Album
   end
   
   def songs
-    Song.find_by_album(self.id)
+    Song.find_by_album(@id)
   end
 end
 
