@@ -69,6 +69,19 @@ class Album
     end
     albums
   end
+
+  def self.random()
+    sorted_albums = DB.exec("SELECT * FROM albums ORDER BY random() LIMIT 1;")
+    albums = []
+    sorted_albums.each() do |album|
+      name = album.fetch("name")
+      id = album.fetch("id").to_i
+      year = album.fetch("year").to_i
+      cost = album.fetch("cost").to_i
+      albums.push(Album.new({:name => name, :id => id, :year => year, :cost => cost}))
+    end
+    albums
+  end
     
   def save
     #@@albums[self.id] = self

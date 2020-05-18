@@ -159,6 +159,18 @@ require('spec_helper')
     end
   end
 
+  describe(".random") do
+    it("returns a random album") do
+      album = Album.new({:name => "Blue", :id => nil, :year => 2005, :cost => 10})
+      album.save()
+      album2 = Album.new({:name => "Red", :id => nil, :year => 2000, :cost => 12})
+      album2.save()
+      album3 = Album.new({:name => "Green", :id => nil, :year => 2010, :cost => 15})
+      album3.save()
+      expect(Album.random).to(eq([album2]))
+    end
+  end
+
   
 
 

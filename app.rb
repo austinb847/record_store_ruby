@@ -45,9 +45,10 @@ end
 post('/albums') do
   name = params[:album_name]
   year = params[:album_year]
-  genre = params[:album_genre]
-  artist = params[:album_artist]
-  album = Album.new(name, nil, year, genre, artist)
+  cost = params[:album_cost]
+  # genre = params[:album_genre]
+  # artist = params[:album_artist]
+  album = Album.new({:name => name, :id => nil, :year => year, :cost => cost});
   # @album.update(params[:album_name], params[:album_year], params[:album_genre], params[:album_artist])
   album.save()
   @albums = Album.all()
@@ -61,8 +62,8 @@ end
 
 patch('/albums/:id') do
   @album = Album.find(params[:id].to_i())
-  @sold_albums = @album.sold()
-  @album.update(params[:name], params[:album_year], params[:album_genre], params[:album_artist])
+  #@sold_albums = @album.sold()
+  @album.update(params[:name])
   @albums = Album.all
   erb(:albums)
 end
@@ -91,9 +92,9 @@ end
 post('/albums/:id/songs') do
   @album = Album.find(params[:id].to_i())
   song_name = params[:song_name]
-  lyrics = params[:lyrics]
-  songwriter = params[:songwriter]
-  song = Song.new(song_name, @album.id, nil, lyrics, songwriter)
+  # lyrics = params[:lyrics]
+  # songwriter = params[:songwriter]
+  song = Song.new({:name => song_name, :album_id => @album.id, :id => nil})
   song.save()
   #@songs = Song.all
   #@albums = Album.all
@@ -104,7 +105,7 @@ end
 patch('/albums/:id/songs/:song_id') do
   @album = Album.find(params[:id].to_i())
   song = Song.find(params[:song_id].to_i())
-  song.update(params[:song_name], @album.id, params[:lyrics], params[:songwriter])
+  song.update(params[:song_name], @album.id)
   # @songs = Song.all
   erb(:album)
 end

@@ -7,7 +7,7 @@
 <% if @albums.any? %>
   <ul>
     <% @albums.each do |album| %>
-      <li><a href="/albums/<%= album.id %>"><%= album.name %> by: <%= album.artist %></a></li>
+      <li><a href="/albums/<%= album.id %>"><%= album.name %></a></li>
     <% end %>
   </ul>
 <% else %> 
@@ -23,16 +23,3 @@
   </div>
   <button type="submit" class="btn">Go!</button>
 </form>
-</div>
-
-<h3>Sold albums</h3>
-
-<% if @albums.any? %>
-<ul>
-  <% @albums.select { |album| album.sold_albums}.each do |album|%> 
-    <li><%= album.name %></li>
-  <% end %>
-</ul>
-<% else %> 
-  <p>There are currently no sold albums to display.</p>
-<% end %>
