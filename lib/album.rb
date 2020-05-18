@@ -3,7 +3,7 @@ require 'pry'
 class Album
 
   attr_reader :id 
-  attr_accessor :name, :year #:sold_albums, :year, :genre, :artist
+  attr_accessor :name, :year, :cost #:sold_albums, :year, :genre, :artist
   
   
 
@@ -11,6 +11,7 @@ class Album
     @name = attributes.fetch(:name)  
     @id = attributes.fetch(:id)
     @year = attributes.fetch(:year).to_i
+    @cost = attributes.fetch(:cost).to_i
     # @genre = attributes.fetch(:genre)
     # @artist = attributes.fetch(:artist)
     # @sold_albums = false 
@@ -24,7 +25,8 @@ class Album
       name = album.fetch("name")
       id = album.fetch("id").to_i
       year = album.fetch("year").to_i
-      albums.push(Album.new({:name => name, :id => id, :year => year}))
+      cost = album.fetch("cost").to_i
+      albums.push(Album.new({:name => name, :id => id, :year => year, :cost => cost}))
     end
     albums
   end
@@ -36,7 +38,8 @@ class Album
       name = album.fetch("name")
       id = album.fetch("id").to_i
       year = album.fetch("year").to_i
-      albums.push(Album.new({:name => name, :id => id, :year => year}))
+      cost = album.fetch("cost").to_i
+      albums.push(Album.new({:name => name, :id => id, :year => year, :cost => cost}))
     end
     albums
   end
@@ -48,16 +51,28 @@ class Album
       name = album.fetch("name")
       id = album.fetch("id").to_i
       year = album.fetch("year").to_i
-      albums.push(Album.new({:name => name, :id => id, :year => year}))
+      cost = album.fetch("cost").to_i
+      albums.push(Album.new({:name => name, :id => id, :year => year, :cost => cost}))
     end
     albums
   end
 
-
+  def self.sort_by_cost()
+    sorted_albums = DB.exec("SELECT * FROM albums ORDER BY cost;")
+    albums = []
+    sorted_albums.each() do |album|
+      name = album.fetch("name")
+      id = album.fetch("id").to_i
+      year = album.fetch("year").to_i
+      cost = album.fetch("cost").to_i
+      albums.push(Album.new({:name => name, :id => id, :year => year, :cost => cost}))
+    end
+    albums
+  end
     
   def save
     #@@albums[self.id] = self
-    result = DB.exec("INSERT INTO albums (name, year) VALUES ('#{@name}', '#{@year}') RETURNING id;") # [{:name => "some_name", :id => 2}]
+    result = DB.exec("INSERT INTO albums (name, year, cost) VALUES ('#{@name}', '#{@year}', '#{@cost}') RETURNING id;") # [{:name => "some_name", :id => 2}]
     @id = result.first().fetch("id").to_i  
   end
 
@@ -74,7 +89,8 @@ class Album
     name = album.fetch("name")
     id = album.fetch("id").to_i
     year = album.fetch("year").to_i
-    Album.new({:name => name, :id => id, :year => year})
+    cost = album.fetch("cost").to_i
+    Album.new({:name => name, :id => id, :year => year, :cost => cost})
   end
 
   # def self.search(search)
@@ -95,9 +111,9 @@ class Album
     DB.exec("DELETE FROM songs WHERE album_id = #{@id};")
   end
    
-  def sold
-    @@albums[self.id].sold_albums = true
-  end
+  # def sold
+  #   @@albums[self.id].sold_albums = true
+  # end
   
   def songs
     Song.find_by_album(@id)
