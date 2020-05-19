@@ -1,0 +1,16 @@
+<h3>Artist Name: <%= @artist.name %></h3>
+<%# EDIT INPUT & BUTTON %>
+<form action="/artists/<%= @artist.id %>" method="post">
+  <input name=_method type="hidden" value="patch">
+  
+  <input id="artist_name" name="artist_name" type="text" placeholder="Enter Here">
+  <button type="submit" class="btn btn-danger">Edit</button>
+</form>
+<%# DELETE BUTTON %>
+<form action="/artists/<%= @artist.id %>" method="post">
+  <input name="_method" type="hidden" value="delete">
+
+  <button type="submit" class="btn btn-danger">Delete artist</button>
+</form>
+
+<br><a href="/artists">Return to home page</a>

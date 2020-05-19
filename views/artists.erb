@@ -1,0 +1,16 @@
+<h1>All Artists</h1>
+
+<h3>Current Artists:</h3>
+<% if @artists.any? %>
+  <ul>
+    <% @artists.each do |artist| %>
+      <li><a href="/artists/<%= artist.id %>"><%= artist.name %></a></li>
+    <% end %>
+  </ul>
+<% else %> 
+  <p>There are currently no records to display.</p>
+<% end %>
+
+<a href="/artists/new">Add a new artist</a>
+<br>
+<a href="/albums">Return to home page</a>

@@ -50,4 +50,36 @@ describe('#Artist') do
     end
   end
 
+  describe('.clear') do 
+    it("clears all artists") do
+      artist = Artist.new({:name => "John Coltrane", :id => nil})
+      artist.save()
+      artist2 = Artist.new({:name => "Ice Cube", :id => nil})
+      artist2.save()
+      Artist.clear()
+      expect(Artist.all).to(eq([]))
+    end
+  end
+
+  describe('.find') do
+    it("finds an artist by id") do
+      artist = Artist.new({:name => "John Coltrane", :id => nil})
+      artist.save()
+      artist2 = Artist.new({:name => "Ice Cube", :id => nil})
+      artist2.save()
+      expect(Artist.find(artist.id)).to(eq(artist))
+    end
+  end
+
+  describe("#delete") do
+    it("deletes an artist") do
+      artist = Artist.new({:name => "John Coltrane", :id => nil})
+      artist.save()
+      artist2 = Artist.new({:name => "Ice Cube", :id => nil})
+      artist2.save()
+      artist2.delete()
+      expect(Artist.all).to(eq([artist]))
+    end
+  end
+
 end
